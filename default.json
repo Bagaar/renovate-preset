@@ -1,103 +1,85 @@
 {
-  "extends": [
-    "config:recommended",
-    ":pinVersions",
-    ":semanticCommits",
-    ":semanticCommitTypeAll(chore)"
-  ],
-  "schedule": [
-     "every wednesday",
-     "every tuesday"
-  ],
-  "prConcurrentLimit": 2,
-  "assignees": ["gvdp"],
-  "separateMultipleMajor": true,
-  "prCreation": "not-pending",
-  "dependencyDashboardApproval": false,
-  "rebaseWhen": "conflicted",
-  "postUpdateOptions": [
-    "yarnDedupeHighest"
-  ],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
-  "patch": {
-    "semanticCommitScope": "deps-patch"
+  "extends": [
+    "config:best-practices",
+    "group:glimmer",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    "schedule:weekends",
+    ":pinAllExceptPeerDependencies",
+    ":maintainLockFilesDisabled"
+  ],
+  "labels": ["internal"],
+  "major": {
+    "semanticCommitScope": "deps-major"
   },
   "minor": {
     "semanticCommitScope": "deps-minor"
   },
-  "major": {
-    "semanticCommitType": "feat",
-    "semanticCommitScope": "deps-major"
-  },
   "packageRules": [
-       {
-      "matchPackageNames": ["*"],
-      "dependencyDashboardApproval": false
+    {
+      "automerge": true,
+      "matchDepTypes": ["devDependencies"],
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch", "pin"]
     },
     {
       "matchDepTypes": ["devDependencies"],
       "semanticCommitScope": "deps-dev"
     },
     {
-      "matchUpdateTypes": ["patch", "pin", "digest"],
-      "automerge": true
+      "automerge": true,
+      "matchUpdateTypes": ["patch", "pin", "digest"]
     },
     {
-      "matchUpdateTypes": ["minor"],
-      "matchDepTypes": ["devDependencies"],
-      "automerge": true
-    },
-    {        
-      "matchCurrentVersion": "<1.0.0",
-      "automerge": false
+      "automerge": true,
+      "matchPackageNames": ["pnpm", "node"],
+      "matchUpdateTypes": ["patch", "minor", "pin"],
+      "rebaseWhen": "behind-base-branch"
     },
     {
-      "matchDatasources": ["npm"],
-      "stabilityDays": 3
+      "automerge": false,
+      "matchCurrentVersion": "<1.0.0"
     },
     {
       "matchDepTypes": ["devDependencies"],
       "prPriority": -1
     },
     {
-      "matchSourceUrlPrefixes": [
-        "https://github.com/vitejs/vite", 
-        "https://github.com/vitest-dev/vitest"
-      ],
-      "matchUpdateTypes": [
-        "digest",
-        "patch",
-        "minor",
-        "major"
-      ],
-      "groupName": "vite monorepo",
-      "separateMultipleMajor": false
+      "automerge": false,
+      "matchPackageNames": ["ember-cli", "ember-data", "ember-source"],
+      "matchUpdateTypes": ["major", "minor"]
     },
     {
-      "matchPackagePatterns": ["pnpm"],
-      "enabled": false
-    }, 
-    {   
-      "matchUpdateTypes": ["major"],
-      "matchPackageNames": [
-        "node",
-        "node.js",
-        "@types/node"
-      ],
-      "groupName": "Node"
-    },
-    {   
-      "matchUpdateTypes": ["patch"],
-      "groupName": "Patches",
-      "automerge": true
+      "matchDepTypes": ["action"],
+      "pinDigests": false
     },
     {
       "groupName": "stylelint",
-      "matchPackageNames": [
-        "stylelint",
-        "stylelint-*"
-      ],
+      "matchPackageNames": ["stylelint", "stylelint-*"],
       "separateMultipleMajor": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": ["node", "node.js", "@types/node"],
+      "groupName": "Node"
+    },
+    {
+      "allowedVersions": "<7",
+      "description": "TypeScript 7 drops the JS compiler API that Glint and typescript-eslint need, see https://github.com/Bagaar/ember-graphql-mocking/issues/288",
+      "matchPackageNames": ["typescript"]
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "matchFileNames": ["ember-graphql-mocking/package.json"],
+      "rangeStrategy": "widen"
     }
-  ]
+  ],
+  "patch": {
+    "semanticCommitScope": "deps-patch"
+  },
+  "prCreation": "not-pending",
+  "rebaseWhen": "conflicted",
+  "separateMultipleMajor": true
 }
